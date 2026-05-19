@@ -47,6 +47,23 @@ Optional environment variables:
 - `SANITY_WORKSHOP_DOC_TYPE` (default: `workshop`)
 - `SANITY_WORKSHOP_PEOPLE_FIELD` (default: `hostReferences`)
 
+## YouTube stream sync
+
+Run the `sync-workshop-youtube-stream` workflow manually with no input. It finds the most recent workshop that has already happened, matches its title against the latest YouTube streams using `yt-dlp`, and writes the matched URL to Sanity's `youtubeUrl` field.
+
+Deployment must provide `yt-dlp` on `PATH`, or set `YT_DLP_BINARY` to its location.
+
+Optional environment variables:
+
+- `YOUTUBE_STREAMS_URL` (default: `https://www.youtube.com/@mastra-ai/streams`)
+- `YOUTUBE_STREAM_LIMIT` (default: `3`)
+- `YOUTUBE_TITLE_MATCH_MIN_SCORE` (default: `0.82`)
+- `YT_DLP_BINARY` (default: `yt-dlp`)
+
+## Follow-up email copy
+
+Run the `generate-follow-up-email` workflow manually with no input. It finds the most recent past workshop, finds the next upcoming workshop, and asks the follow-up email agent to output ready-to-copy Luma email text.
+
 ## Deploy on Mastra Cloud
 
 [Mastra Cloud](https://cloud.mastra.ai/) gives you a serverless agent environment with atomic deployments. Access your agents from anywhere and monitor performance. Make sure they don't go off the rails with evals and tracing.
