@@ -7,8 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "mastra dev",
     "build": "mastra build",
-    "start": "mastra start",
-    "sync:luma-to-sanity": "node scripts/sync-luma-to-sanity.mjs"
+    "start": "mastra start"
   },
   "keywords": [],
   "author": "",
@@ -25,7 +24,6 @@
     "@mastra/memory": "^1.23.0",
     "@mastra/observability": "^1.16.1",
     "@sanity/client": "^7.17.0",
-    "axios": "^1.13.5",
     "date-fns": "^4.1.0",
     "zod": "^4.3.6"
   },

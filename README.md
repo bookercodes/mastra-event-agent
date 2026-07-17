@@ -20,33 +20,6 @@ To learn more about Mastra, visit our [documentation](https://mastra.ai/docs/). 
 
 If you're new to AI agents, check out our [course](https://mastra.ai/course) and [YouTube videos](https://youtube.com/@mastra-ai). You can also join our [Discord](https://discord.gg/BTYqqHKUrf) community to get help and share your projects.
 
-## Sync Luma events to Sanity
-
-Use this script to mirror workshops from Luma into Sanity so Luma can be your source of truth:
-
-```shell
-pnpm run sync:luma-to-sanity
-```
-
-Optional flags:
-
-```shell
-pnpm run sync:luma-to-sanity -- --dry-run
-pnpm run sync:luma-to-sanity -- --after=2026-01-01T00:00:00.000Z --limit=50
-```
-
-Required environment variables:
-
-- `LUMA_API_KEY`
-- `SANITY_PROJECT_ID`
-- `SANITY_API_TOKEN`
-
-Optional environment variables:
-
-- `SANITY_DATASET` (default: `production`)
-- `SANITY_WORKSHOP_DOC_TYPE` (default: `workshop`)
-- `SANITY_WORKSHOP_PEOPLE_FIELD` (default: `hostReferences`)
-
 ## YouTube stream sync
 
 Run the `sync-workshop-youtube-stream` workflow manually with no input. It finds the most recent workshop that has already happened, matches its title against the latest YouTube streams using `yt-dlp`, and writes the matched URL to Sanity's `youtubeUrl` field.
