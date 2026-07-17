@@ -31,16 +31,6 @@ export interface WorkshopYoutubeSyncCandidate {
   youtubeUrl?: string;
 }
 
-export interface WorkshopFollowUpEmailCandidate {
-  _id: string;
-  title: string;
-  description?: string;
-  shortDescription?: string;
-  eventDate: string;
-  lumaUrl?: string;
-  youtubeUrl?: string;
-}
-
 type WorkshopPeopleField = 'hostReferences' | 'speakers' | 'hosts' | 'guests';
 type WorkshopGuestReference = { _key: string; _type: 'reference'; _ref: string };
 const DEFAULT_WORKSHOP_PEOPLE_FIELD: WorkshopPeopleField = 'hostReferences';
@@ -354,8 +344,6 @@ async function findLatestPastWorkshopDoc<T>(): Promise<T | undefined> {
     `*[_type == $docType && defined(title) && defined(eventDate) && dateTime(eventDate) <= dateTime($now)] | order(dateTime(eventDate) desc)[0]{
       _id,
       title,
-      description,
-      shortDescription,
       eventDate,
       lumaUrl,
       youtubeUrl
@@ -368,31 +356,6 @@ async function findLatestPastWorkshopDoc<T>(): Promise<T | undefined> {
 
 export async function findWorkshopForYoutubeSync(): Promise<WorkshopYoutubeSyncCandidate | undefined> {
   return findLatestPastWorkshopDoc<WorkshopYoutubeSyncCandidate>();
-}
-
-export async function findLatestPastWorkshopForFollowUpEmail(): Promise<WorkshopFollowUpEmailCandidate | undefined> {
-  return findLatestPastWorkshopDoc<WorkshopFollowUpEmailCandidate>();
-}
-
-export async function findNextUpcomingWorkshopForFollowUpEmail(): Promise<WorkshopFollowUpEmailCandidate | undefined> {
-  const client = getSanityClient();
-  const docType = process.env.SANITY_WORKSHOP_DOC_TYPE || 'workshop';
-  const now = new Date().toISOString();
-
-  const doc = await client.fetch(
-    `*[_type == $docType && defined(title) && defined(eventDate) && dateTime(eventDate) > dateTime($now)] | order(dateTime(eventDate) asc)[0]{
-      _id,
-      title,
-      description,
-      shortDescription,
-      eventDate,
-      lumaUrl,
-      youtubeUrl
-    }`,
-    { docType, now },
-  ) as WorkshopFollowUpEmailCandidate | null;
-
-  return doc || undefined;
 }
 
 export async function updateWorkshopYoutubeUrl(input: {

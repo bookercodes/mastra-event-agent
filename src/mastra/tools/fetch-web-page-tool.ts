@@ -5,7 +5,7 @@ export const fetchWebPageTool = createTool({
   id: 'fetch-web-page',
   description: 'Fetch the content of a web page. Returns the text content (HTML stripped).',
   inputSchema: z.object({
-    url: z.string().url().describe('The URL to fetch'),
+    url: z.url().describe('The URL to fetch'),
   }),
   outputSchema: z.object({
     content: z.string().describe('The text content of the page'),

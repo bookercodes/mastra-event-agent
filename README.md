@@ -60,10 +60,6 @@ Optional environment variables:
 - `YOUTUBE_TITLE_MATCH_MIN_SCORE` (default: `0.82`)
 - `YT_DLP_BINARY` (default: `yt-dlp`)
 
-## Follow-up email copy
-
-Run the `generate-follow-up-email` workflow manually with no input. It finds the most recent past workshop, finds the next upcoming workshop, and asks the follow-up email agent to output ready-to-copy Luma email text.
-
 ## Deploy on Mastra Cloud
 
 [Mastra Cloud](https://cloud.mastra.ai/) gives you a serverless agent environment with atomic deployments. Access your agents from anywhere and monitor performance. Make sure they don't go off the rails with evals and tracing.

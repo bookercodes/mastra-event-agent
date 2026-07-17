@@ -76,7 +76,6 @@ Ask for the event ID if not provided. Use delete-workshop to remove the workshop
     uploadLumaImage: uploadLumaImageTool,
     searchSanityGuests: searchSanityGuestsTool,
     createSanityGuest: createSanityGuestTool,
-    // writeDescription: writeDescriptionTool,
   },
   defaultOptions: {
     requireToolApproval: false,

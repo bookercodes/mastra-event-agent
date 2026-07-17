@@ -1,33 +1,35 @@
-
-import { Mastra } from '@mastra/core/mastra';
-import { PinoLogger } from '@mastra/loggers';
-import { LibSQLStore } from '@mastra/libsql';
-import { Observability, DefaultExporter, CloudExporter, SensitiveDataFilter } from '@mastra/observability';
-import { workshopHelperAgent } from './agents/workshop-helper-agent';
-import { descriptionWriterAgent } from './agents/description-writer-agent';
-import { followUpEmailAgent } from './agents/follow-up-email-agent';
-import { syncWorkshopYoutubeStreamWorkflow } from './workflows/sync-workshop-youtube-stream-workflow';
-import { generateFollowUpEmailWorkflow } from './workflows/generate-follow-up-email-workflow';
+import { Mastra } from "@mastra/core/mastra";
+import { PinoLogger } from "@mastra/loggers";
+import { LibSQLStore } from "@mastra/libsql";
+import {
+  Observability,
+  MastraStorageExporter,
+  MastraPlatformExporter,
+  SensitiveDataFilter,
+} from "@mastra/observability";
+import { workshopHelperAgent } from "./agents/workshop-helper-agent";
+import { descriptionWriterAgent } from "./agents/description-writer-agent";
+import { syncWorkshopYoutubeStreamWorkflow } from "./workflows/sync-workshop-youtube-stream-workflow";
 
 export const mastra = new Mastra({
-  agents: { workshopHelperAgent, descriptionWriterAgent, followUpEmailAgent },
-  workflows: { syncWorkshopYoutubeStreamWorkflow, generateFollowUpEmailWorkflow },
+  agents: { workshopHelperAgent, descriptionWriterAgent },
+  workflows: { syncWorkshopYoutubeStreamWorkflow },
   storage: new LibSQLStore({
     id: "mastra-storage",
     // stores observability, scores, ... into persistent file storage
     url: "file:./mastra.db",
   }),
   logger: new PinoLogger({
-    name: 'Mastra',
-    level: 'info',
+    name: "Mastra",
+    level: "info",
   }),
   observability: new Observability({
     configs: {
       default: {
-        serviceName: 'mastra',
+        serviceName: "mastra",
         exporters: [
-          new DefaultExporter(), // Persists traces to storage for Mastra Studio
-          new CloudExporter(), // Sends traces to Mastra Cloud (if MASTRA_CLOUD_ACCESS_TOKEN is set)
+          new MastraStorageExporter(), // Persists observability events to Mastra Storage
+          new MastraPlatformExporter(), // Sends events to Mastra Platform when configured
         ],
         spanOutputProcessors: [
           new SensitiveDataFilter(), // Redacts sensitive data like passwords, tokens, keys
