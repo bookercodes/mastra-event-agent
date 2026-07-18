@@ -32,7 +32,7 @@ The Slack webhook is intentionally exempt from Mastra bearer authentication. Sla
 
 ## Slack channel
 
-The `agent` is available as a Slack bot through Mastra's Slack channel adapter. Set these environment variables:
+The `agent` enables Mastra's Slack channel adapter only when both of these environment variables are set:
 
 ```shell
 SLACK_BOT_TOKEN=xoxb-your-bot-token
