@@ -32,7 +32,7 @@ The Slack webhook is intentionally exempt from Mastra bearer authentication. Sla
 
 ## Slack channel
 
-The `agent` enables Mastra's Slack channel adapter only when both of these environment variables are set:
+The `event-agent` enables Mastra's Slack channel adapter only when both of these environment variables are set:
 
 ```shell
 SLACK_BOT_TOKEN=xoxb-your-bot-token
@@ -42,7 +42,7 @@ SLACK_SIGNING_SECRET=your-signing-secret
 Configure both Slack Event Subscriptions and Interactivity to use this webhook:
 
 ```text
-https://<YOUR-PUBLIC-URL>/api/agents/agent/channels/slack/webhook
+https://<YOUR-PUBLIC-URL>/api/agents/event-agent/channels/slack/webhook
 ```
 
 Subscribe the bot to `app_mention`, `message.channels`, and `message.im`. Grant it the `app_mentions:read`, `channels:history`, `channels:read`, `chat:write`, `im:history`, `im:read`, `im:write`, and `users:read` bot scopes.

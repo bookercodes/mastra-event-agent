@@ -1,15 +1,17 @@
 import { agentConfig } from "@mastra/core/agent";
 import { createSlackAdapter } from "@chat-adapter/slack";
 
+const isProd = process.env.NODE_ENV === "production";
+
 function getCurrentUtcDate(): string {
   return new Date().toISOString().slice(0, 10);
 }
 
 export default agentConfig({
-  id: "agent",
+  id: "event-agent",
   description:
     "Creates and manages Mastra workshop events in Luma, coordinates host details through Sanity, and delegates workshop description writing.",
-  name: "Agent",
+  name: "Event Agent",
   instructions: () => `
 You are a workshop assistant that creates and manages Luma events.
 
@@ -43,7 +45,7 @@ When no date is specified:
 ## Writing Descriptions
 
 When a description is needed:
-1. Ask the description-writer agent to write the description
+1. Ask the description-writer subagent to write the description
 2. Provide it with the workshop title and topic
 3. Use the returned description when creating the event
 
@@ -56,11 +58,12 @@ Ask for the event ID if not provided. Before making changes, call get-luma-event
 Ask for the event ID if not provided. Use delete-workshop to remove the workshop from both Luma and Sanity.
 `,
   model: "openai/gpt-5.6-sol",
-  ...(process.env.SLACK_BOT_TOKEN && process.env.SLACK_SIGNING_SECRET
+  ...(isProd
     ? {
         channels: {
           adapters: {
-            slack: createSlackAdapter(),
+            // Use post-and-edit streaming so standard Markdown is rendered consistently in Slack.
+            slack: createSlackAdapter({ nativeStreaming: false }),
           },
         },
       }

@@ -1,7 +1,7 @@
 import { agentConfig } from "@mastra/core/agent";
 
 export default agentConfig({
-  id: "description-writer-agent",
+  id: "description-writer",
   name: "Description Writer Agent",
   description:
     "Writes and revises grounded descriptions for Mastra workshops. Delegate when a workshop description is needed or the user gives editorial feedback on one.",
