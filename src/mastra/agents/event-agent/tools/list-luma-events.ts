@@ -4,10 +4,10 @@ import { listLumaEvents } from '../../../lib/luma/client';
 
 const listLumaEventsTool = createTool({
   id: 'list-luma-events',
-  description: 'List upcoming events from Luma calendar. Use this to find scheduled events and identify available dates.',
+  description: 'List the most recent Luma calendar events, newest first. There is no fixed time cutoff unless afterDate is provided; the default response contains the latest 50 events.',
   inputSchema: z.object({
     afterDate: z.string().optional().describe('Only return events after this ISO 8601 date'),
-    limit: z.number().default(50).describe('Maximum number of events to return (default: 50)'),
+    limit: z.number().positive().default(50).describe('Maximum number of newest events to return (default: 50). Increase this when truncated is true and an older event may match'),
   }),
   outputSchema: z.object({
     events: z.array(z.object({
@@ -17,12 +17,17 @@ const listLumaEventsTool = createTool({
       endAt: z.string(),
       url: z.string(),
     })),
+    totalEvents: z.number().describe('Total events Luma returned before applying limit'),
+    truncated: z.boolean().describe('Whether older events were omitted by limit'),
+    newestReturnedAt: z.string().optional().describe('Start time of the newest returned event'),
+    oldestReturnedAt: z.string().optional().describe('Start time of the oldest returned event; a missing event may be older when truncated is true'),
   }),
   execute: async ({ afterDate, limit }) => {
     const events = await listLumaEvents(afterDate);
-    const latestEvents = events
-      .sort((a, b) => new Date(b.start_at).getTime() - new Date(a.start_at).getTime())
-      .slice(0, limit);
+    const sortedEvents = events.sort(
+      (a, b) => new Date(b.start_at).getTime() - new Date(a.start_at).getTime(),
+    );
+    const latestEvents = sortedEvents.slice(0, limit);
 
     return {
       events: latestEvents.map(event => ({
@@ -32,6 +37,10 @@ const listLumaEventsTool = createTool({
         endAt: event.end_at,
         url: event.url,
       })),
+      totalEvents: sortedEvents.length,
+      truncated: sortedEvents.length > latestEvents.length,
+      newestReturnedAt: latestEvents.at(0)?.start_at,
+      oldestReturnedAt: latestEvents.at(-1)?.start_at,
     };
   },
 });
