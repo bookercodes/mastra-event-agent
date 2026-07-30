@@ -5,6 +5,21 @@ description: Localization patterns for Sanity using official plugins and best pr
 
 # Sanity Localization Rules
 
+Use the contents list to jump directly to the localization pattern you need.
+
+## Table of Contents
+
+- Guiding principles
+- Terminology
+- Locale content type
+- Choosing document-level vs field-level localization
+- Document-level localization
+- Localized singletons
+- Field-level localization
+- AI-powered translation
+- UI enhancement
+- Frontend URL best practices
+
 ## 1. Guiding Principles
 
 ### Priority: Easy Authoring Experience
@@ -28,7 +43,7 @@ Don't create nearly identical copies with slight differences (e.g., US vs Britis
 
 ```typescript
 // schemaTypes/locale.ts
-import { TranslateIcon } from '@sanity/icons'
+import { TranslateIcon } from '@sanity/icons/Translate'
 import { defineField, defineType } from 'sanity'
 
 export const localeType = defineType({
@@ -152,7 +167,7 @@ For singletons like homepages that need a separate document per locale, combine 
 
 ```typescript
 // schemaTypes/homePage.ts
-import { HomeIcon } from '@sanity/icons'
+import { HomeIcon } from '@sanity/icons/Home'
 import { defineType, defineField } from 'sanity'
 
 export const homePageType = defineType({
@@ -222,7 +237,7 @@ Create a helper to show one singleton per locale in the Structure:
 ```typescript
 // src/structure/index.ts
 import { StructureBuilder, StructureResolver } from 'sanity/structure'
-import { HomeIcon } from '@sanity/icons'
+import { HomeIcon } from '@sanity/icons/Home'
 
 const LOCALES = ['en', 'fr', 'de']
 
@@ -285,7 +300,7 @@ export const structure: StructureResolver = (S) =>
 
 ### Key Points
 
-- **Fixed IDs:** Use `${typeName}-${locale}` pattern for predictable document IDs
+- **Fixed IDs:** Use `${typeName}-${locale}` only for localized singletons; let Sanity generate IDs for ordinary localized content
 - **Initial Value Templates:** Essential for the "New document" menu to work correctly
 - **Structure:** Group all locale versions under one list item for cleaner navigation
 - **See also:** `studio-structure.md` for more singleton patterns

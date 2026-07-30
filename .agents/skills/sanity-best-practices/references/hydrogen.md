@@ -59,6 +59,8 @@ import {createSanityContext, type SanityContext} from 'hydrogen-sanity'
 import {PreviewSession} from 'hydrogen-sanity/preview/session'
 import {isPreviewEnabled} from 'hydrogen-sanity/preview'
 
+const previewSession = await PreviewSession.init(request, [env.SESSION_SECRET])
+
 const sanity = await createSanityContext({
   request,
   cache,
@@ -124,7 +126,7 @@ const PRODUCT_QUERY = defineQuery(`*[_type == "product" && store.slug.current ==
 
 // Loader
 export async function loader({params, context: {sanity}}: LoaderFunctionArgs) {
-  const initial = await context.sanity.query(PRODUCT_QUERY, params)
+  const initial = await sanity.query(PRODUCT_QUERY, params)
   return {initial}
 }
 
@@ -239,7 +241,7 @@ pnpm add hydrogen-sanity @sanity/client @portabletext/react
 cd studio && pnpm dev    # Studio at localhost:3333
 cd web && pnpm dev       # Hydrogen at localhost:3000
 
-# Sanity Manage (CORS, tokens)
+# Sanity Manage (CORS, tokens): https://www.sanity.io/manage
 pnpm dlx sanity manage
 ```
 
@@ -249,7 +251,7 @@ pnpm dlx sanity manage
   - Query Shopify for commerce data (price, inventory, variants)
   - Query Sanity for editorial content (rich text, custom fields)
   - Use `hydrogen-sanity` package for Visual Editing
-  - Add Hydrogen URL to CORS origins in Sanity Manage
+  - Add Hydrogen URL to CORS origins in [Sanity Manage](https://www.sanity.io/manage)
 
 - Ask First:
   - Before modifying Sanity Connect sync settings
