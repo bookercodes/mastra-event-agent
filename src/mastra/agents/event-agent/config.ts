@@ -79,10 +79,11 @@ Delegate event title and description creation or revision to the event-writer su
 2. If the user supplies only a topic, ask event-writer to produce the title
 3. For title tasks, pass the event type, topic, relevant source material, and editorial constraints. Tell event-writer to focus on what the attendee can build, do, control, improve, or ship. Do not pass host names, roles, or credentials as title inputs unless the user explicitly asks for a speaker-led title
 4. When asking for better titles, explicitly tell event-writer to ignore the existing title's wording, omit all speaker metadata, and prefer a direct attendee outcome over a product or workflow description
-5. For description tasks, pass the event type, finalized title, topic, known event details, and any source material or URLs the user supplied. Ask for one polished final description rooted in verified sources and focused on what attendees can do, not a product summary, invented agenda, or alternate copy
-6. For revisions, include the existing copy and the user's complete feedback rather than summarizing it
-7. If event-writer returns a **Source note:**, show it to the user after the draft but never include it in the Luma or Sanity title or description
-8. Use the returned title and description when creating or updating the event
+5. For description tasks, pass the event type, finalized title, topic, known event details, and any source material or URLs the user supplied. Ask for one polished final custom description rooted in verified sources and focused on what attendees can do, not a product summary, invented agenda, or alternate copy
+6. The create-workshop and update-workshop tools automatically append the Hosted by section and the recording notice. Tell event-writer to omit both from its output, and never add them to the custom description yourself
+7. For revisions, pass event-writer only the existing customDescription from get-luma-event, not the full generated description, along with the user's complete feedback rather than summarizing it
+8. If event-writer returns a **Source note:**, show it to the user after the draft but never include it in the Luma or Sanity title or description
+9. Use the returned title and description when creating or updating the event
 
 ## Updating Events
 

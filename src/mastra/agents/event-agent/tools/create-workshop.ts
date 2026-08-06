@@ -2,6 +2,7 @@ import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { addMinutes } from 'date-fns';
 import { createLumaEvent, getLumaEvent } from '../../../lib/luma/client';
+import { buildLumaDescription } from '../../../lib/luma/descriptions';
 import { uploadLumaImageFromRemoteUrl } from '../../../lib/luma/images';
 import { upsertWorkshopFromLumaEvent } from '../../../lib/sanity/workshops';
 
@@ -16,42 +17,6 @@ const hostSchema = z.object({
   website: z.string().optional().describe('Personal or company website URL'),
 });
 
-function buildHostsSection(hosts: z.infer<typeof hostSchema>[]): string {
-  return hosts.map(host => {
-    const hostDetails = [host.name, host.area, host.company].filter(Boolean).join(', ');
-    const subItems: string[] = [];
-    if (host.xHandle) {
-      subItems.push(`  - https://x.com/${host.xHandle}`);
-    }
-    if (host.website) {
-      subItems.push(`  - ${host.website}`);
-    }
-    const line = `- ${hostDetails}`;
-    return subItems.length > 0 ? `${line}\n${subItems.join('\n')}` : line;
-  }).join('\n');
-}
-
-function buildDescription(
-  hosts: z.infer<typeof hostSchema>[],
-  customDescription?: string
-): string {
-  const parts: string[] = [];
-
-  if (customDescription) {
-    parts.push(customDescription);
-  }
-
-  parts.push('');
-  parts.push('---');
-  parts.push('**Hosted by**');
-  parts.push('');
-  parts.push(buildHostsSection(hosts));
-  parts.push('');
-  parts.push('*Recording and code examples will be available to everyone who registers.*');
-
-  return parts.join('\n');
-}
-
 const createWorkshopTool = createTool({
   id: 'create-workshop',
   description: 'Create a workshop or webinar event in Luma, then create or update its corresponding document in the Sanity workshops collection',
@@ -59,7 +24,7 @@ const createWorkshopTool = createTool({
   inputSchema: z.object({
     title: z.string().describe('Event title'),
     hosts: z.array(hostSchema).min(1).describe('Array of hosts for the event'),
-    description: z.string().optional().describe('Custom description body (hosts section is auto-generated)'),
+    description: z.string().optional().describe('Custom description body only. Do not include the generated Hosted by section or recording notice'),
     startAt: z.string().describe('Start date and time in ISO 8601 format; use 17:00 Europe/London local time (DST-aware), normally Tuesday for webinars and Thursday for workshops'),
     duration: z.number().default(60).describe('Duration in minutes (default: 60)'),
     coverImageUrl: z.string().optional().describe('URL to an image to use as the event cover'),
@@ -73,7 +38,7 @@ const createWorkshopTool = createTool({
   execute: async ({ title, hosts, description, startAt, duration = 60, coverImageUrl }) => {
     const startDate = new Date(startAt);
     const endDate = addMinutes(startDate, duration);
-    const fullDescription = buildDescription(hosts, description);
+    const fullDescription = buildLumaDescription(hosts, description);
 
     console.log('Creating event with description:', fullDescription);
 

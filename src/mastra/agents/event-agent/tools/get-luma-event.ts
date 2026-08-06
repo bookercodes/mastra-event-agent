@@ -1,6 +1,7 @@
 import { createTool } from '@mastra/core/tools';
 import { z } from 'zod';
 import { getLumaEvent } from '../../../lib/luma/client';
+import { GENERATED_HOSTS_SEPARATOR, getCustomDescription } from '../../../lib/luma/descriptions';
 
 const hostSchema = z.object({
   name: z.string(),
@@ -10,12 +11,8 @@ const hostSchema = z.object({
   website: z.string().optional(),
 });
 
-function getCustomDescription(description: string): string {
-  return description.split('\n---\n**Hosted by**\n', 1)[0].trim();
-}
-
 function getHosts(description: string): z.infer<typeof hostSchema>[] {
-  const hostsSection = description.split('\n---\n**Hosted by**\n')[1];
+  const hostsSection = description.split(GENERATED_HOSTS_SEPARATOR)[1];
   if (!hostsSection) {
     return [];
   }
@@ -63,7 +60,7 @@ const getLumaEventTool = createTool({
     eventId: z.string(),
     title: z.string(),
     description: z.string().describe('Full Luma Markdown description, including the generated host section'),
-    customDescription: z.string().describe('Description body without the generated host section; pass this to update-workshop'),
+    customDescription: z.string().describe('Description body without the generated host section or recording notice; pass this to update-workshop'),
     hosts: z.array(hostSchema).describe('Hosts parsed from the generated host section; use message history if this is empty or incomplete'),
     startAt: z.string(),
     endAt: z.string(),
