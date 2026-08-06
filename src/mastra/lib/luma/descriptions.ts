@@ -4,6 +4,7 @@ export const RECORDING_NOTICE = 'Recording and code examples will be available t
 export interface LumaDescriptionHost {
   name: string;
   area?: string;
+  title?: string;
   company?: string;
   xHandle?: string;
   website?: string;
@@ -37,7 +38,7 @@ export function getCustomDescription(description: string): string {
 
 function buildHostsSection(hosts: readonly LumaDescriptionHost[]): string {
   return hosts.map((host) => {
-    const hostDetails = [host.name, host.area, host.company].filter(Boolean).join(', ');
+    const hostDetails = [host.name, host.title || host.area, host.company].filter(Boolean).join(', ');
     const subItems: string[] = [];
     if (host.xHandle) {
       subItems.push(`  - https://x.com/${host.xHandle}`);

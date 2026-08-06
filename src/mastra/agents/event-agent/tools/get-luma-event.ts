@@ -67,6 +67,7 @@ const getLumaEventTool = createTool({
     duration: z.number().describe('Event duration in minutes; pass this to update-workshop when unchanged'),
     url: z.string(),
     coverUrl: z.string().describe('Current cover URL, or an empty string when the event has no cover'),
+    meetingUrl: z.string().describe('Current virtual meeting URL, or an empty string when the event has no meeting URL'),
     timezone: z.string(),
   }),
   execute: async ({ eventId }) => {
@@ -84,6 +85,7 @@ const getLumaEventTool = createTool({
       duration: getDurationMinutes(event.start_at, event.end_at),
       url: event.url,
       coverUrl: event.cover_url || '',
+      meetingUrl: event.meeting_url || '',
       timezone: event.timezone || 'Europe/London',
     };
   },

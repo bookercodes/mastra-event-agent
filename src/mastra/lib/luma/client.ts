@@ -8,6 +8,7 @@ export interface LumaEvent {
   end_at: string;
   url: string;
   cover_url?: string;
+  meeting_url?: string;
   timezone?: string;
 }
 
@@ -51,6 +52,7 @@ export interface LumaUpdateEventInput {
   start_at?: string;
   end_at?: string;
   cover_url?: string;
+  meeting_url?: string;
 }
 
 export interface LumaDeleteEventOptions {

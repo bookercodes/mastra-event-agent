@@ -7,6 +7,7 @@ export interface WorkshopHostInput {
   guestId?: string;
   name: string;
   area?: string;
+  title?: string;
   company?: string;
   xHandle?: string;
   website?: string;
@@ -165,6 +166,8 @@ async function findOrCreateGuest(client: SanityClient, host: WorkshopHostInput):
     _type: 'guest',
     name: host.name,
     slug: { _type: 'slug', current: slug },
+    ...(host.area && { area: host.area }),
+    ...(host.title && { title: host.title }),
     ...(host.company && { company: host.company }),
     ...(host.xHandle && { xHandle: host.xHandle }),
     ...(host.website && { website: host.website }),

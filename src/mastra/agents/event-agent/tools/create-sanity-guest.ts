@@ -16,6 +16,8 @@ const createSanityGuestTool = createTool({
   requireApproval: true,
   inputSchema: z.object({
     name: z.string().describe('Guest name'),
+    area: z.string().optional().describe('Broad functional area, such as Engineering or Marketing'),
+    title: z.string().optional().describe('Specific job title, such as Co-Founder and CTO'),
     company: z.string().optional().describe('Company or organization'),
     xHandle: z.string().optional().describe('X (Twitter) handle without @'),
     website: z.string().optional().describe('Personal or company website URL'),
@@ -24,8 +26,10 @@ const createSanityGuestTool = createTool({
     _id: z.string(),
     name: z.string(),
     slug: z.string(),
+    area: z.string().optional(),
+    title: z.string().optional(),
   }),
-  execute: async ({ name, company, xHandle, website }) => {
+  execute: async ({ name, area, title, company, xHandle, website }) => {
     const client = getSanityClient();
     const slug = toSlug(name);
 
@@ -33,6 +37,8 @@ const createSanityGuestTool = createTool({
       _type: 'guest',
       name,
       slug: { _type: 'slug', current: slug },
+      ...(area && { area }),
+      ...(title && { title }),
       ...(company && { company }),
       ...(xHandle && { xHandle }),
       ...(website && { website }),
@@ -42,6 +48,8 @@ const createSanityGuestTool = createTool({
       _id: doc._id,
       name,
       slug,
+      ...(area && { area }),
+      ...(title && { title }),
     };
   },
 });

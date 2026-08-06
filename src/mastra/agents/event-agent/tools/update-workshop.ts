@@ -9,7 +9,8 @@ import { upsertWorkshopFromLumaEvent } from '../../../lib/sanity/workshops';
 const hostSchema = z.object({
   guestId: z.string().optional().describe('Sanity guest document ID (recommended when available)'),
   name: z.string().describe('Host name'),
-  area: z.string().optional().describe('Host role or area to show in Luma, without seniority (for example: Developer Experience, Customer Engineering)'),
+  area: z.string().optional().describe('Broad functional area, such as Engineering or Marketing; shown in Luma when title is unavailable'),
+  title: z.string().optional().describe('Specific job title, such as Developer Experience or Co-Founder and CTO; preferred over area in Luma'),
   company: z.string().optional().describe('Company or organization'),
   xHandle: z.string().optional().describe('X (Twitter) handle without @'),
   website: z.string().optional().describe('Personal or company website URL'),
@@ -27,6 +28,7 @@ const updateWorkshopTool = createTool({
     startAt: z.string().min(1).describe('Final start date and time in ISO 8601 format; pass the existing startAt when unchanged. Workshops run on Tuesday or Thursday at 17:00 Europe/London local time (DST-aware). Never null'),
     duration: z.number().positive().describe('Final duration in minutes; pass the existing duration from get-luma-event when unchanged. Never null'),
     coverImageUrl: z.string().describe('Final cover image URL; pass the existing coverUrl when unchanged, or an empty string only when the event has no cover. Never null'),
+    meetingUrl: z.string().describe('Final virtual meeting URL; pass the existing meetingUrl when unchanged, or an empty string only when the event has no meeting URL. Never null'),
   }),
   outputSchema: z.object({
     eventId: z.string().describe('Luma API ID for the event'),
@@ -35,7 +37,7 @@ const updateWorkshopTool = createTool({
     sanityDocId: z.string().optional().describe('Sanity document ID created or updated for this workshop'),
     sanityAction: z.enum(['created', 'updated']).optional().describe('Whether the related Sanity workshop doc was created or updated'),
   }),
-  execute: async ({ eventId, title, hosts, description, startAt, duration, coverImageUrl }) => {
+  execute: async ({ eventId, title, hosts, description, startAt, duration, coverImageUrl, meetingUrl }) => {
     const currentEvent = await getLumaEvent(eventId);
     const updatePayload: LumaUpdateEventInput = {};
     const updatedFields: string[] = [];
@@ -71,6 +73,11 @@ const updateWorkshopTool = createTool({
     if (coverImageUrl && coverImageUrl !== currentEvent.cover_url) {
       updatePayload.cover_url = await uploadLumaImageFromRemoteUrl(coverImageUrl);
       updatedFields.push('coverImage');
+    }
+
+    if (meetingUrl !== (currentEvent.meeting_url || '')) {
+      updatePayload.meeting_url = meetingUrl;
+      updatedFields.push('meetingUrl');
     }
 
     if (Object.keys(updatePayload).length === 0) {

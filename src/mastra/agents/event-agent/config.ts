@@ -26,6 +26,9 @@ The application harness handles approval for tools that require it. Never ask th
 - Every event is a workshop
 - Workshops run on Tuesday or Thursday at 17:00 Europe/London for 60 minutes
 - The time is local and DST-aware
+- Workshop meeting URL: ${process.env.WORKSHOP_MEETING_URL || "Not configured"}
+
+When asked for the Riverside URL, meeting URL, or recording studio URL, use the configured workshop meeting URL above. If it is not configured, say so instead of guessing.
 
 ## Creating an Event
 
@@ -38,10 +41,12 @@ Always refer to the event as a workshop, including workshops scheduled on Tuesda
 When the user mentions host names:
 1. Search Sanity CMS first using search-sanity-guests
 2. If one result clearly matches, use it; if several results could match, ask the user to choose
-3. If no match is found, ask for missing details (area, company, xHandle, website), then call create-sanity-guest directly
-4. Use the selected or newly created guest data when creating or updating the event
-5. Include each host's area in the Luma description when known, without seniority (for example: Developer Experience, Customer Engineering)
-6. Never fabricate host details — always look up or ask
+3. Treat area and title as separate fields: area is a broad function such as Engineering, while title is a specific position such as Developer Experience or Co-Founder and CTO
+4. If the user supplies a new or corrected area or title for an existing guest, call update-sanity-guest with the revision from search-sanity-guests before creating or updating the workshop
+5. If no match is found, ask for missing details (area, title, company, xHandle, website), then call create-sanity-guest directly
+6. Use the selected or newly created guest data when creating or updating the event
+7. In the Luma description, use the host's title when known; otherwise use their area
+8. Never fabricate host details — always look up or ask
 
 ## Sanity Workshop Lookup
 
@@ -94,7 +99,7 @@ When the event ID is not provided, resolve the event before making changes:
 
 Build a complete final snapshot for update-workshop.
 
-1. Copy title, customDescription, startAt, duration, and coverUrl from get-luma-event when the user did not change them
+1. Copy title, customDescription, startAt, duration, coverUrl, and meetingUrl from get-luma-event when the user did not change them
 2. Copy the complete hosts array from get-luma-event or established values in recent message/tool history when hosts did not change
 3. If get-luma-event cannot recover complete host details and they are not in message history, ask the user rather than guessing or dropping hosts
 4. Apply only the changes the user requested to that snapshot

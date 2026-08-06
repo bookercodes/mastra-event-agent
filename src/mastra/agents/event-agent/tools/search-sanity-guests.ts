@@ -5,8 +5,10 @@ import { getSanityClient } from '../../../lib/sanity/client';
 
 const guestSchema = z.object({
   _id: z.string(),
+  revision: z.string(),
   name: z.string(),
   area: z.string().nullable().optional(),
+  title: z.string().nullable().optional(),
   company: z.string().nullable().optional(),
   slug: z.string().nullable().optional(),
   xHandle: z.string().nullable().optional(),
@@ -30,8 +32,10 @@ const searchSanityGuestsTool = createTool({
     const guests = await client.fetch<Guest[], QueryParams>(
       `*[_type == "guest" && name match $searchTerm]{
         _id,
+        "revision": _rev,
         name,
-        "area": coalesce(area, role, jobTitle, title),
+        area,
+        title,
         company,
         "slug": slug.current,
         xHandle,

@@ -11,7 +11,8 @@ const DEFAULT_COVER_IMAGE_URL = 'https://images.lumacdn.com/event-covers/g3/9cd7
 const hostSchema = z.object({
   guestId: z.string().optional().describe('Sanity guest document ID (recommended when available)'),
   name: z.string().describe('Host name'),
-  area: z.string().optional().describe('Host role or area to show in Luma, without seniority (for example: Developer Experience, Customer Engineering)'),
+  area: z.string().optional().describe('Broad functional area, such as Engineering or Marketing; shown in Luma when title is unavailable'),
+  title: z.string().optional().describe('Specific job title, such as Developer Experience or Co-Founder and CTO; preferred over area in Luma'),
   company: z.string().optional().describe('Company or organization'),
   xHandle: z.string().optional().describe('X (Twitter) handle without @'),
   website: z.string().optional().describe('Personal or company website URL'),
