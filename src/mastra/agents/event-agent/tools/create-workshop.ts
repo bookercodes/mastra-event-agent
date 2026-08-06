@@ -19,13 +19,13 @@ const hostSchema = z.object({
 
 const createWorkshopTool = createTool({
   id: 'create-workshop',
-  description: 'Create a workshop or webinar event in Luma, then create or update its corresponding document in the Sanity workshops collection',
+  description: 'Create a workshop event in Luma, then create or update its corresponding document in the Sanity workshops collection',
   requireApproval: true,
   inputSchema: z.object({
     title: z.string().describe('Event title'),
     hosts: z.array(hostSchema).min(1).describe('Array of hosts for the event'),
     description: z.string().optional().describe('Custom description body only. Do not include the generated Hosted by section or recording notice'),
-    startAt: z.string().describe('Start date and time in ISO 8601 format; use 17:00 Europe/London local time (DST-aware), normally Tuesday for webinars and Thursday for workshops'),
+    startAt: z.string().describe('Start date and time in ISO 8601 format; workshops run on Tuesday or Thursday at 17:00 Europe/London local time (DST-aware)'),
     duration: z.number().default(60).describe('Duration in minutes (default: 60)'),
     coverImageUrl: z.string().optional().describe('URL to an image to use as the event cover'),
   }),

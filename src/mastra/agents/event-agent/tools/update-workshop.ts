@@ -17,14 +17,14 @@ const hostSchema = z.object({
 
 const updateWorkshopTool = createTool({
   id: 'update-workshop',
-  description: 'Update a workshop or webinar event in Luma and its corresponding Sanity document using a complete, non-null snapshot of current values plus requested changes',
+  description: 'Update a workshop event in Luma and its corresponding Sanity document using a complete, non-null snapshot of current values plus requested changes',
   requireApproval: true,
   inputSchema: z.object({
     eventId: z.string().describe('Luma API ID of the event to update'),
     title: z.string().min(1).describe('Final event title; pass the existing title when unchanged. Never null'),
     hosts: z.array(hostSchema).min(1).describe('Complete final array of event hosts; pass the existing hosts from get-luma-event or message history when unchanged. Never null'),
     description: z.string().describe('Final custom description body only, without the generated Hosted by section or recording notice; pass the existing customDescription from get-luma-event when unchanged. Never null'),
-    startAt: z.string().min(1).describe('Final start date and time in ISO 8601 format; pass the existing startAt when unchanged. Use 17:00 Europe/London local time (DST-aware), normally Tuesday for webinars and Thursday for workshops. Never null'),
+    startAt: z.string().min(1).describe('Final start date and time in ISO 8601 format; pass the existing startAt when unchanged. Workshops run on Tuesday or Thursday at 17:00 Europe/London local time (DST-aware). Never null'),
     duration: z.number().positive().describe('Final duration in minutes; pass the existing duration from get-luma-event when unchanged. Never null'),
     coverImageUrl: z.string().describe('Final cover image URL; pass the existing coverUrl when unchanged, or an empty string only when the event has no cover. Never null'),
   }),

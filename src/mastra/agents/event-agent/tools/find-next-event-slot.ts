@@ -4,12 +4,7 @@ import { listLumaEvents } from '../../../lib/luma/client';
 
 const TIMEZONE = 'Europe/London';
 const DEFAULT_HOUR = 17;
-const EVENT_WEEKDAYS = {
-  webinar: 2,
-  workshop: 4,
-} as const;
-
-type EventType = keyof typeof EVENT_WEEKDAYS;
+const WORKSHOP_WEEKDAYS = new Set([2, 4]);
 
 interface SkippedDate {
   localDate: string;
@@ -17,7 +12,6 @@ interface SkippedDate {
 }
 
 interface EventSlot {
-  eventType: EventType;
   localDate: string;
   startAt: string;
   endAt: string;
@@ -83,24 +77,21 @@ function toUtcDate(year: number, month: number, day: number, hour: number): Date
 }
 
 export async function findNextEventSlot(
-  eventType: EventType,
   duration: number,
   now = new Date(),
 ): Promise<EventSlot> {
   const events = await listLumaEvents();
   const today = getDateParts(now);
   const calendarDate = new Date(Date.UTC(today.year, today.month - 1, today.day, 12));
-  const targetWeekday = EVENT_WEEKDAYS[eventType];
-  let daysUntilTarget = (targetWeekday - calendarDate.getUTCDay() + 7) % 7;
-  if (daysUntilTarget === 0) {
-    daysUntilTarget = 7;
-  }
-
   const skippedDates: SkippedDate[] = [];
 
-  for (let week = 0; week < 104; week += 1) {
+  for (let dayOffset = 1; dayOffset <= 104 * 7; dayOffset += 1) {
     const candidate = new Date(calendarDate);
-    candidate.setUTCDate(candidate.getUTCDate() + daysUntilTarget + (week * 7));
+    candidate.setUTCDate(candidate.getUTCDate() + dayOffset);
+    if (!WORKSHOP_WEEKDAYS.has(candidate.getUTCDay())) {
+      continue;
+    }
+
     const localDate = candidate.toISOString().slice(0, 10);
     const conflicts = events.filter(event => getLocalDate(new Date(event.start_at)) === localDate);
 
@@ -125,7 +116,6 @@ export async function findNextEventSlot(
     const endAt = new Date(startAt.getTime() + (duration * 60_000));
 
     return {
-      eventType,
       localDate,
       startAt: startAt.toISOString(),
       endAt: endAt.toISOString(),
@@ -134,18 +124,16 @@ export async function findNextEventSlot(
     };
   }
 
-  throw new Error(`No free ${eventType} date found in the next 104 weeks.`);
+  throw new Error('No free Tuesday or Thursday workshop date found in the next 104 weeks.');
 }
 
 const findNextEventSlotTool = createTool({
   id: 'find-next-event-slot',
-  description: 'Deterministically find the next free default Luma date for an event: Tuesday for webinars or Thursday for workshops, at 17:00 Europe/London. Skips occupied dates automatically.',
+  description: 'Deterministically find the next free workshop date on Tuesday or Thursday at 17:00 Europe/London. Returns the earliest available date and skips occupied dates automatically.',
   inputSchema: z.object({
-    eventType: z.enum(['workshop', 'webinar']),
     duration: z.number().int().positive().default(60).describe('Event duration in minutes (default: 60)'),
   }),
   outputSchema: z.object({
-    eventType: z.enum(['workshop', 'webinar']),
     localDate: z.string().describe('Selected date in Europe/London as YYYY-MM-DD'),
     startAt: z.string().describe('Selected start time as an ISO 8601 UTC timestamp'),
     endAt: z.string().describe('Selected end time as an ISO 8601 UTC timestamp'),
@@ -159,8 +147,8 @@ const findNextEventSlotTool = createTool({
       })),
     })).describe('Candidate dates skipped because Luma already has an event on that London calendar date'),
   }),
-  execute: async ({ eventType, duration }) => {
-    return findNextEventSlot(eventType, duration);
+  execute: async ({ duration }) => {
+    return findNextEventSlot(duration);
   },
 });
 

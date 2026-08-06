@@ -5,7 +5,7 @@ import { deleteWorkshopFromSanity } from '../../../lib/sanity/workshops';
 
 const deleteWorkshopTool = createTool({
   id: 'delete-workshop',
-  description: 'Delete a workshop or webinar event in Luma and remove its corresponding document from the Sanity workshops collection',
+  description: 'Delete a workshop event in Luma and remove its corresponding document from the Sanity workshops collection',
   requireApproval: true,
   inputSchema: z.object({
     eventName: z.string().optional().describe('Optional event name for UI visibility only'),
