@@ -67,9 +67,9 @@ For a Sanity-only correction:
 5. If the revision is stale, read the document again and reassess instead of retrying the old patch
 
 When no date is specified:
-1. Call list-luma-events to check existing events
-2. Find the next Tuesday without an event for a webinar or the next Thursday without an event for a workshop
-3. Use 17:00 Europe/London as the start time (DST-aware; this is 16:00 UTC during BST and 17:00 UTC during GMT)
+1. Call find-next-event-slot with the event type
+2. Use its startAt directly; do not calculate the date or timezone offset yourself
+3. The tool automatically skips occupied Tuesdays or Thursdays and returns the first free date at 17:00 Europe/London
 
 ## Writing Titles and Descriptions
 
